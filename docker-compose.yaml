@@ -1,0 +1,42 @@
+services:
+  main:
+    container_name: app
+    build:
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - ${APP_PORT}:5000
+    command: npm run start:dev
+    depends_on:
+      - postgres
+      - redis
+    restart: on-failure
+
+
+  postgres:
+    image: postgres:16.1
+    container_name: postgres
+    env_file:
+      - .env
+    ports:
+      - ${POSTGRES_PORT}:5432
+    volumes:
+      - ./cars-api-db:/var/lib/postgresql/cars-api-db
+    restart: on-failure
+
+
+  redis:
+    image: redis:7.2.3
+    container_name: redis
+    env_file:
+      - .env
+    ports:
+      - ${REDIS_PORT}:6379
+    restart: on-failure
+
+volumes:
+  cars-api-db:
